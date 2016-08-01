@@ -1,0 +1,30 @@
+---
+layout: default
+---
+{% include header.html %}
+<div class="post">
+    <div class="post__nav"> 
+	<div class="post__nav_prev">
+	  {% if page.previous.url %}
+	    <a class="prev" href="{{page.previous.url}}">&lt;-- {{page.previous.title}}</a>
+	  {% endif %}
+	</div>
+	<div class="post__nav_next">
+	  {% if page.next.url %}
+	    <a class="next" href="{{page.next.url}}">{{page.next.title}} --&gt;</a>
+	  {% endif %}
+	</div>
+    </div>
+    <h1 class="post__title">{{ page.title }}</h1>
+    <p class="post__date">{{ page.date | date: '%B %-d, %Y' }}</p>
+    {% if page.tags %}
+	  {% for tag in page.tags %}
+	    <a href="{{ site.baseurl }}/blog/tags#{{ tag | slugify }}" class="post-tag">{{ tag }}</a>
+	  {% endfor %}
+	  {% endif %}
+	
+    <div class="post__content">
+        {{ content }}
+    </div>
+
+</div>
