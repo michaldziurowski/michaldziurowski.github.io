@@ -8,7 +8,7 @@ To install Aurelia you will need:
 *	[npm](https://www.npmjs.com/) - package manager, basically you can think of it as a package manager you will use to download development tools
 *	[jspm](http://jspm.io/) - also a package manager, install it using npm, basically you will use it for downloading your application dependencies (and then load them in ES6 style using [SystemJS](https://github.com/systemjs/systemjs))
 
-In a directory where you would like to store your app initialize jspm:
+In a directory where you would like to store your app initialize jspm (if you don't do it explicitly you will be asked to initialize during installation of first package via jspm):
 
 ```
 $ jspm init
