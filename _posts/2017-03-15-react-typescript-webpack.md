@@ -7,12 +7,13 @@ If you are using tutorial from [typescript doc](https://www.typescriptlang.org/d
 
 ```
 $ webpack
-Invalid configuration object. Webpack has been initialised using a configuration object that does not match
-the API schema.
+Invalid configuration object. Webpack has been initialised using a configuration object that does 
+not match the API schema.
  - configuration.module has an unknown property 'preLoaders'. These properties are valid:
    object { exprContextCritical?, exprContextRecursive?, exprContextRegExp?, exprContextRequest?, loaders?,
-noParse?, rules?, unknownContextCritical?, unknownContextRecursive?, unknownContextRegExp?, unknownContextRe
-quest?, unsafeCache?, wrappedContextCritical?, wrappedContextRecursive?, wrappedContextRegExp? }
+   noParse?, rules?, unknownContextCritical?, unknownContextRecursive?, unknownContextRegExp?, 
+   unknownContextRequest?, unsafeCache?, wrappedContextCritical?, wrappedContextRecursive?, 
+   wrappedContextRegExp? }
    Options affecting the normal modules (`NormalModuleFactory`).
  - configuration.resolve.extensions[0] should not be empty.
 ```
