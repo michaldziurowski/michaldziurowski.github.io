@@ -24,7 +24,7 @@ There are two reasons for that:
 
 Working **webpack.config.js** looks like this:
 
-```
+```javascript
 module.exports = {
     entry: "./src/index.tsx",
     output: {
