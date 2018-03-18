@@ -168,6 +168,27 @@
             }
         }
 
+        @media only screen and (max-height: 500px) {
+            #me-img-container,
+            #page-text-content .header {
+                display: none;
+            }
+
+            #page-text-content {
+                visibility: visible;
+                opacity: 1;                
+            }
+
+            #page-text-content .content {
+                position: static;
+            }
+
+            .page-content {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
         .showable {
             visibility: hidden;
             opacity: 0;
@@ -227,9 +248,9 @@
             const img = document.getElementById('me-img');
             const container = document.getElementById('me-img-container');
             container.classList.add('animate-resize');
-            img.classList.add('animate-rotate-scale');            
+            img.classList.add('animate-rotate-scale');
         }
-        
+
         // Function from David Walsh: http://davidwalsh.name/css-animation-callback
         function whichAnimationEvent() {
             var t,
