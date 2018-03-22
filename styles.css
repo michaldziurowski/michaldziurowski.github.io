@@ -16,9 +16,13 @@
     border-radius: 50%;
 }
 
+#content {
+    height: 100%;
+}
+
 #content-header {
     padding-top: 10px;
-    height: 70px;
+    height: 15%;
 }
 
 #content-header .title {
@@ -27,7 +31,7 @@
 
 #content-body {
     width: 100%;
-    height: calc(100vh - 90px);
+    height: 80%;
     position: relative;
 }
 
