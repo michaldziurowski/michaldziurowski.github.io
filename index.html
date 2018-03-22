@@ -1,229 +1,35 @@
-<html>
+<!doctype html>
+
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
     <title>Michal Dziurowski</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Domine|Montserrat" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet" />
     <link href="botchat.css" rel="stylesheet" />
-    <style>
-        .page-container {
-            display: flex;
-            font-family: 'Domine', serif;
-        }
-
-        .page-content {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #page-text-content {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            flex-basis: 80%;
-        }
-
-        #page-text-content .header {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            font-family: 'Montserrat', sans-serif;
-            text-align: center;
-            flex-basis: 20%;
-        }
-
-        #page-text-content .content {
-            flex-basis: 80%;
-            position: relative;
-        }
-
-        #page-text-content .header .title {
-            font-size: 1.5em;
-        }
-
-        .me-img-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .me-img {
-            border-radius: 50%;
-            align-self: center;
-        }
-
-        .animate-rotate-scale {
-            animation: meRotateScale 1s 1s linear forwards;
-        }
-
-        .animate-resize {
-            animation: resizeContainer 1s 1s linear forwards;
-        }
-
-        .speech-bubble {
-            position: absolute;
-            background: #0078d7;
-            color: #fff;
-            border-radius: .4em;
-            width: 200px;
-            height: 60px;
-            padding: 10px;
-            top: 75px;
-            left: 72px;
-            z-index: 1000;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
-        }
-
-        .speech-bubble:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border: 18px solid transparent;
-            border-bottom-color: #0078d7;
-            border-top: 0;
-            border-left: 0;
-            margin-left: -9px;
-            margin-top: -18px;
-        }
-
-        @keyframes resizeContainer {
-            0% {
-                width: 100%;
-                height: 100%;
-            }
-            100% {
-                height: 20%;
-            }
-        }
-
-        @keyframes meRotateScale {
-            0% {
-                transform: rotate(0deg) scale(1);
-            }
-            100% {
-                transform: rotate(-360deg) scale(0.5);
-            }
-        }
-
-        @media only screen and (min-width: 768px) {
-            .offset {
-                flex-basis: 10%;
-            }
-
-            .page-content {
-                flex-basis: 80%;
-            }
-
-            #page-text-content {
-                flex-basis: 100%;
-            }
-
-            #page-text-content .header {
-                padding-top: 10px;
-                padding-left: 138px;
-                height: 130px;
-            }
-
-            #page-text-content .header .title {
-                font-size: 3em;
-            }
-
-            #page-text-content .content {
-                padding-left: 138px;
-            }
-
-            .me-img-container {
-                position: absolute;
-            }
-
-            .speech-bubble {
-                left: -33px;
-            }
-
-            @keyframes resizeContainer {
-                0% {
-                    width: 100%;
-                    height: 100%;
-                }
-                100% {
-                    width: 128px;
-                    height: 128px;
-                }
-            }
-
-            @keyframes meRotateScale {
-                0% {
-                    transform: rotate(0deg) scale(1);
-                }
-                100% {
-                    transform: rotate(-360deg) scale(0.5);
-                }
-            }
-        }
-
-        @media only screen and (max-height: 500px) {
-            #me-img-container,
-            #page-text-content .header {
-                display: none;
-            }
-
-            #page-text-content {
-                visibility: visible;
-                opacity: 1;                
-            }
-
-            #page-text-content .content {
-                position: static;
-            }
-
-            .page-content {
-                width: 100%;
-                height: 100%;
-            }
-        }
-
-        .showable {
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0s, opacity 0.5s linear;
-        }
-
-        .visible {
-            visibility: visible;
-            opacity: 1;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="page-container">
-        <div class="offset">
+    <div id="page-container">
+        <div id="img-container" class="showable">
+            <img src="me.jpg" alt="Me" id="me-img" />
         </div>
-        <div class="page-content">
-            <div id="speech-bubble" class="speech-bubble showable">
-                Whoa! That got me dizzy... One more animation and I'm done :)
+        <div id="speech-bubble" class="showable">
+            Whoa! That got me dizzy... One more animation and I'm done :)
+        </div>
+        <div id="content" class="showable">
+            <div id="content-header">
+                <div class="title">Hi I'm Michal Dziurowski.</div>
+                <div class="subtitle">Reasonable dude with passion for software development.</div>
             </div>
-            <div id="me-img-container" class="me-img-container showable">
-                <img id="me-img" src="md.jpg" alt="Me" class="me-img">
-            </div>
-            <div id="page-text-content" class="showable">
-                <div class="header">
-                    <div class="title">Hi I'm Michał Dziurowski.</div>
-                    <div class="subtitle">Reasonable dude with passion for software development.</div>
-                </div>
-                <div class="content">
-                    <div id="bot" />
-                </div>
+            <div id="content-body">
+                <div id="bot" />
             </div>
         </div>
     </div>
+    <script src="scripts.js"></script>
     <script src="botchat.js"></script>
     <script>
         BotChat.App({
@@ -232,62 +38,6 @@
             bot: { id: 'botid' },
             resize: 'detect'
         }, document.getElementById("bot"));
-    </script>
-    <script type="text/javascript">
-        function showElement(elementId) {
-            const element = document.getElementById(elementId);
-            element.classList.add('visible');
-        }
-
-        function hideElement(elementId) {
-            const element = document.getElementById(elementId);
-            element.classList.remove('visible');
-        }
-
-        function applyAnimations() {
-            const img = document.getElementById('me-img');
-            const container = document.getElementById('me-img-container');
-            container.classList.add('animate-resize');
-            img.classList.add('animate-rotate-scale');
-        }
-
-        // Function from David Walsh: http://davidwalsh.name/css-animation-callback
-        function whichAnimationEvent() {
-            var t,
-                el = document.createElement("fakeelement");
-
-            var transitions = {
-                "animation": "animationend",
-                "OAnimation": "oAnimationEnd",
-                "MozAnimation": "animationend",
-                "WebkitAnimation": "webkitAnimationEnd"
-            }
-
-            for (t in transitions) {
-                if (el.style[t] !== undefined) {
-                    return transitions[t];
-                }
-            }
-        }
-
-        window.addEventListener('load', function () {
-            const animationEvent = whichAnimationEvent();
-            const item = document.getElementById('me-img');
-            item.addEventListener(animationEvent, animationEndCallback);
-
-            showElement('me-img-container');
-            applyAnimations();
-
-            function animationEndCallback(event) {
-                item.removeEventListener(animationEvent, animationEndCallback);
-                showElement('speech-bubble');
-
-                setTimeout(function () {
-                    hideElement('speech-bubble');
-                    showElement('page-text-content');
-                }, 3000);
-            }
-        });
     </script>
 </body>
 
