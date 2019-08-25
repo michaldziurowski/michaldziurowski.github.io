@@ -1,18 +1,6 @@
 Making code faster - the go tools story.
 -- make some cool entrance
 
-0. describe problem
-1. put code here of super slow execution
-2. put code with a bit better execution (with strbuilder)
-3. put code with goroutines
-4. introduce trace
-5. introduce better concurrency
-6. introduce pprof
-	make joke about hacker terminal vs visual
-7. make some changes
-8. show its faster
-9. mention final version
-
 https://ayende.com/blog/176034/making-code-faster-the-interview-question
 
 ```
@@ -303,3 +291,5 @@ func from8Bytes(by []byte) int {
 ```
 
 seems ugly but runs in ~0,75s
+
+mention super fast with mmap, mention docerized
