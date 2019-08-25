@@ -232,4 +232,74 @@ func report(in, out string) {
 
 takes around 3s, lets take a look (entering pprof + web with flame graphs)
 
+command line like a boss
 
+```bash
+> go tool pprof cpu.out 
+File: making-code-faster.test
+Type: cpu
+Time: Aug 25, 2019 at 12:30pm (CEST)
+Duration: 2.95s, Total samples = 6.67s (225.96%)
+Entering interactive mode (type "help" for commands, "o" for options)
+(pprof) top
+Showing nodes accounting for 4890ms, 73.31% of 6670ms total
+Dropped 68 nodes (cum <= 33.35ms)
+Showing top 10 nodes out of 60
+      flat  flat%   sum%        cum   cum%
+    1730ms 25.94% 25.94%     4010ms 60.12%  time.parse
+     980ms 14.69% 40.63%      980ms 14.69%  time.nextStdChunk
+     720ms 10.79% 51.42%      880ms 13.19%  runtime.mapassign_fast64
+     360ms  5.40% 56.82%      360ms  5.40%  time.skip
+     240ms  3.60% 60.42%      270ms  4.05%  runtime.heapBitsSetType
+     230ms  3.45% 63.87%      410ms  6.15%  time.Date
+     190ms  2.85% 66.72%      710ms 10.64%  runtime.mallocgc
+     150ms  2.25% 68.97%     4980ms 74.66%  github.com/michaldziurowski/making-code-faster.newCarRecord
+     150ms  2.25% 71.21%      270ms  4.05%  time.getnum
+     140ms  2.10% 73.31%      140ms  2.10%  time.isDigit
+(pprof) 
+
+```
+
+web view
+
+![pprof_web_view.png](pprof_web_view.png)
+
+flame graph 
+
+![pprof_flame_graph.png](pprof_flame_graph.png)
+
+What we learned is that our program spends much time in time.parse. It seems that we could do substraction by ourselfs and see it that helps
+
+```go
+func newCarRecord(b []byte) (int, float64) {
+	start := parseTime(b[:19])
+	end := parseTime(b[20:39])
+	id := from8Bytes(b[40:48])
+
+	return id, end.Sub(start).Seconds()
+}
+
+func parseTime(b []byte) time.Time {
+	y := from4Bytes(b[:4])
+	m := time.Month(from2Bytes(b[5:7]))
+	d := from2Bytes(b[8:10])
+	h := from2Bytes(b[11:13])
+	mi := from2Bytes(b[14:16])
+	s := from2Bytes(b[17:19])
+	return time.Date(y, m, d, h, mi, s, 0, time.UTC)
+}
+
+func from2Bytes(by []byte) int {
+	return int(by[0]-'0')*10 + int(by[1]-'0')
+}
+
+func from4Bytes(by []byte) int {
+	return int(by[0]-'0')*1000 + int(by[1]-'0')*100 + int(by[2]-'0')*10 + int(by[3]-'0')
+}
+
+func from8Bytes(by []byte) int {
+	return int(by[0]-'0')*10000000 + int(by[1]-'0')*1000000 + int(by[2]-'0')*1000000 + int(by[3]-'0')*10000 + int(by[4]-'0')*1000 + int(by[5]-'0')*100 + int(by[6]-'0')*10 + int(by[7]-'0')
+}
+```
+
+seems ugly but runs in ~0,75s
