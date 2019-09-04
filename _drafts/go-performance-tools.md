@@ -1,7 +1,9 @@
-Making code faster - the go tools story.
--- make some cool entrance
+Some time ago I stumbled upon a great series of blog posts about making code faster (https://ayende.com/blog/176034/making-code-faster-the-interview-question) the problem described there is easy to understand and the results of performance optimizations are quite impressive. 
+I decided that this example would be a great base for my adventure in getting to know tools for performance analysis in go, so if you are also interested tag along :)
 
-https://ayende.com/blog/176034/making-code-faster-the-interview-question
+1. The problem
+Problem as I mentioned is quite simple. Given a text file of parking lot entries calculate how much time each car spend in it.
+The file consist of lines (delimited by CRLF) and each line has three columns: time of entry, time of leave and car id.
 
 ```
 2015-01-01T16:44:31 2015-01-01T19:09:14 00043064
@@ -16,6 +18,8 @@ https://ayende.com/blog/176034/making-code-faster-the-interview-question
 2015-01-01T10:12:43 2015-01-01T12:36:07 00135455
 ```
 
+2. First solution
+The straight forward solution could look like this: 
 
 ```go
 type carRecord struct {
@@ -61,8 +65,13 @@ func report(in, out string) {
 	ioutil.WriteFile(out, []byte(sb.String()), 0644)
 }
 ```
-above takes around 5,6 s
-fun fuct try to replace string.Builder with string concatenation like this:
+
+This code reads the whole file into memory, splits it by lines, parses each line, calculates duration for each car, sums it with previousely calculated ones and writes results to another file.
+
+Execution of this program takes on my machine around 5,6s.
+
+Fun fuct try to replace string.Builder with string concatenation like this:
+
 ```go
 output := ""
 for id, duration := range durations {
@@ -71,9 +80,12 @@ for id, duration := range durations {
 ```
 and see what happens, spoiler alert: it then takes around 50s to execute
 I guess its true what some dude on the internet said:
-> Unnecessary allocation is a bitch
+> Unnecessary memory allocation makes someone cry
 
-Lets make it concurrent
+2. Second solution
+Ok ~6s is not that bad but since we know it can be faster it would be a sin not to try.
+One of the things go is famous for is its support for concurrency so lets try that.
+So lets try to create workers responsible for calculations for given batch of lines.
 
 ```go
 func report(inFileName, outFileName string) {
@@ -84,17 +96,17 @@ func report(inFileName, outFileName string) {
 	durations := make(map[int]float64)
 	wg := sync.WaitGroup{}
 	mu := sync.Mutex{}
-	noOfWorkers := 4
-	cWork := make(chan []string, 100)
+	noOfWorkers := 4 // just arbitrary number of workers 
+	cWork := make(chan []string, 100) // channel on which we will be sending batches for workers
 
 	for i := 0; i < noOfWorkers; i++ {
-		go func() {
+		go func() { // worker code - receives batch of lines, calculates duration for car and sums it up with previousely calculated values
 			for dataBatch := range cWork {
 				for x := 0; x < len(dataBatch); x++ {
 					line := dataBatch[x]
 					record := newCarRecord(line)
 					duration := record.End.Sub(record.Start).Seconds()
-					mu.Lock()
+					mu.Lock() // we have to lock modifications on shared map
 					durations[record.ID] += duration
 					mu.Unlock()
 				}
@@ -107,7 +119,7 @@ func report(inFileName, outFileName string) {
 	wg.Add(noOfWorkers)
 
 	noOfLines := len(lines) - 1 // because we know that the last line is empty
-	batchSize := 100000
+	batchSize := 100000 // arbitrary number of lines we would like to process in a batch
 	noOfBatches := int(noOfLines / batchSize)
 
 	for x := 0; x < noOfBatches; x++ {
@@ -132,7 +144,18 @@ func report(inFileName, outFileName string) {
 }
 ```
 
-TODO: ble ble write benchmark ble ble 
+This runs in TODO!s. Better but I would expect more :)
+We know what our program is conceptually doing (code tells us that) but can we know what it its really doing ? Sure we can! And here comes the first tool we will use: trace.
+"Trace is a tool for viewing trace files" (dugh! - thanks https://golang.org/cmd/trace/ :) ).
+So what are the trace files ? Trace file is a file with information about go runtime events occured during execution like garbage collections, heap size, scheduling etc
+Enough theory lets generate trace file from the execution of our program.
+
+We have several options:
+ - explicitly tell our program to emit events to given file using [runtime/trace](https://godoc.org/runtime/trace) package
+ - using net/http/pprof if we are creating web services
+ - let go test tool gather trace for us 
+
+Since I already have a benchmark laying aroung which I used for measuring the execution time
 
 ```go
 package main
@@ -146,7 +169,11 @@ func BenchmarkReport(b *testing.B) {
 }
 ```
 
-TODO: ble ble benchstat bleble
+I will use the third option to generate trace.
+
+```
+> go test -bench=BenchmarkReport -trace trace.out
+```
 
 TODO: ble ble trace ble ble
 ![trace_concurrent_1.png](trace_concurrent_1.png)
