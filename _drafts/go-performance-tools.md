@@ -1,5 +1,5 @@
 Some time ago I stumbled upon a great series of blog posts about making code faster (https://ayende.com/blog/176034/making-code-faster-the-interview-question) the problem described there is easy to understand and the results of performance optimizations are quite impressive. 
-I decided that this example would be a great base for my adventure in getting to know tools for performance analysis in go, so if you are also interested tag along :)
+I decided that this example would be a great base for my adventure in exploration of tools for performance analysis in go, so if you are also interested tag along :)
 
 1. The problem
 Problem as I mentioned is quite simple. Given a text file of parking lot entries calculate how much time each car spend in it.
@@ -175,8 +175,21 @@ I will use the third option to generate trace.
 > go test -bench=BenchmarkReport -trace trace.out
 ```
 
-TODO: ble ble trace ble ble
+Now when we have trace file available lets run trace tool 
+
+```
+> go tool trace trace.out
+```
+
+Note: the trace viewer part of the trace tool works only in Chromium browsers (Chrome).
+
+This is what you should see in the browser:
+
 ![trace_concurrent_1.png](trace_concurrent_1.png)
+
+First section shows you usage of goroutines, heap and threads over time (you guessed it! bigger the bars are the more resource of a type is used ;) )
+The second section shows TODO!
+
 
 a lot of locks bleble and also 1 sec just reading file so lets try to change it a bit 
 
