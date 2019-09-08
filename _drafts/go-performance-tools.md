@@ -68,7 +68,7 @@ func report(in, out string) {
 
 This code reads the whole file into memory, splits it by lines, parses each line, calculates duration for each car, sums it with previousely calculated ones and writes results to another file.
 
-Execution of this program takes on my machine around 5,6s.
+Execution of this program takes on my machine around 5,3s.
 
 Fun fuct try to replace string.Builder with string concatenation like this:
 
@@ -83,9 +83,9 @@ I guess its true what some dude on the internet said:
 > Unnecessary memory allocation makes someone cry
 
 2. Second solution
-Ok ~6s is not that bad but since we know it can be faster it would be a sin not to try.
+Ok ~5,3s is not that bad but since we know it can be faster it would be a sin not to try.
 One of the things go is famous for is its support for concurrency so lets try that.
-So lets try to create workers responsible for calculations for given batch of lines.
+We will create workers responsible for calculations for given batch of lines.
 
 ```go
 func report(inFileName, outFileName string) {
@@ -144,7 +144,7 @@ func report(inFileName, outFileName string) {
 }
 ```
 
-This runs in TODO!s. Better but I would expect more :)
+This runs in ~3,7s. Better but I would expect more :)
 We know what our program is conceptually doing (code tells us that) but can we know what it its really doing ? Sure we can! And here comes the first tool we will use: trace.
 "Trace is a tool for viewing trace files" (dugh! - thanks https://golang.org/cmd/trace/ :) ).
 So what are the trace files ? Trace file is a file with information about go runtime events occured during execution like garbage collections, heap size, scheduling etc
@@ -155,7 +155,7 @@ We have several options:
  - using net/http/pprof if we are creating web services
  - let go test tool gather trace for us 
 
-Since I already have a benchmark laying aroung which I used for measuring the execution time
+Since I already have a benchmark laying aroung which I used for measuring the execution time (yep using benchmark for time measuring in this case is a bit of overcomplication but since this is an expliration who's going to stop me)
 
 ```go
 package main
@@ -181,17 +181,26 @@ Now when we have trace file available lets run trace tool
 > go tool trace trace.out
 ```
 
+This opens a browser. Lets click on "View trace".
+
 Note: the trace viewer part of the trace tool works only in Chromium browsers (Chrome).
 
 This is what you should see in the browser:
 
 ![trace_concurrent_1.png](trace_concurrent_1.png)
 
-First section shows you usage of goroutines, heap and threads over time (you guessed it! bigger the bars are the more resource of a type is used ;) )
-The second section shows TODO!
+First section shows you usage of goroutines, heap and threads over time (you guessed it! bigger the bars are the more resource of a type is used).
+The second section shows our go routines work over processor cores.
+For navigation WSAD keys are used (for more options hit "?" key).
+Elements on this screen are clicable if we click around in Proc section we might see the stack trace showing which piece of our code is responsible for the work.
+After closer look two things came to my mind. First it takes aroung 600ms to prepare the data (read from file and split by lines), second there is a lot of work related to locking we do when we are modifying durations map.
 
+![trace_with_stacktrace.png](trace_with_stacktrace.png)
 
-a lot of locks bleble and also 1 sec just reading file so lets try to change it a bit 
+Lets try to do something about it.
+
+3. Third solution
+The next improvement idea is not to read whole file upfront but to read batches of file and send them to process to workers. Each worker will calculate durations based on data batch and send the result to go routine responsible for merging those partial results into one.
 
 ```go
 func report(in, out string) {
